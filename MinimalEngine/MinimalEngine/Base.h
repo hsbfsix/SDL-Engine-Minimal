@@ -23,6 +23,11 @@ I know. All inline functions. Laziness.
 
 #include <SDL.h>
 #include "Events.h"
+#include <Windows.h>
+#include <iostream>
+#include <list>
+#include <stack>
+using namespace std;
 
 enum class Colors
 {
@@ -62,9 +67,11 @@ struct Window
 struct Box // represents a rectangle. Make a list if you want more than one. Basically a wrapper around SDL_Rect.
 {
 	SDL_Rect parameters;
+	Colors defaultColor;
 
-	void createBox(int x, int y, int width, int height) //origin is top-left, not top-right. X is as usual, Y is reversed.
+	void createBox(int x, int y, int width, int height, Colors color) //origin is top-left, not top-right. X is as usual, Y is reversed.
 	{
+		defaultColor = color;
 		parameters.x = x;
 		parameters.y = y;
 		parameters.w = width;
@@ -87,6 +94,8 @@ struct Box // represents a rectangle. Make a list if you want more than one. Bas
 		if (parameters.h < 0)
 			parameters.h = 0;
 	}
+
+	virtual ~Box() {}
 };
 
 struct Renderer
@@ -136,16 +145,25 @@ struct Renderer
 		}
 	}
 
-	void clear() //use this before starting a new frame. Will reset the color to black.
+	void clear() //Use this before starting a new frame. Will reset the color to black.
 	{
 		setColor(Colors::BLACK);
 		SDL_RenderClear(renderer);
 	}
 
-	void renderBox(Box *box, Colors color)
+	void renderBox(Box *box) //Box rendering galore. Uses the box's default color.
 	{
-		setColor(color);
+		setColor(box->defaultColor);
 		SDL_RenderDrawRect(renderer, &(box->parameters));
+	}
+
+	void renderBoxList(list<Box*>& boxList) //All in one utility to render boxes. Clears screen automatically.
+	{
+		clear();
+		for (auto temp = boxList.begin(); temp != boxList.end(); temp++)
+		{
+			renderBox(*temp);
+		}
 	}
 
 	~Renderer()

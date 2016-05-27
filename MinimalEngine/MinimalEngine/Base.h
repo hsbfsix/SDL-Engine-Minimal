@@ -21,9 +21,13 @@ Voila. Windowing ready.
 I know. All inline functions. Laziness.
 */
 
-#include <SDL2/SDL.h>
 #include "Events.h"
-//#include <Windows.h>
+#ifdef _WIN32
+	#include <Windows.h>
+	#include <SDL.h>
+#else
+	#include <SDL2/SDL.h>
+#endif // _WIN32
 #include <iostream>
 #include <list>
 #include <stack>
@@ -125,7 +129,7 @@ struct Renderer
 		switch (color)
 		{
  		case Colors::RED:
--			SDL_SetRenderDrawColor(renderer, 0xff, 0x00, 0x00, 0xff);
+			SDL_SetRenderDrawColor(renderer, 0xff, 0x00, 0x00, 0xff);
 			break;
 		case Colors::BLUE:
 			SDL_SetRenderDrawColor(renderer, 0x00, 0x00, 0xff, 0xff);
